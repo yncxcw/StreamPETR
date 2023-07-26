@@ -144,7 +144,7 @@ def custom_train_detector(model,
 
     # register hooks
     runner.register_training_hooks(cfg.lr_config, optimizer_config,
-                                   cfg.checkpoint_config, cfg.log_config,
+                                   cfg.checkpoint_config,
                                    cfg.get('momentum_config', None))
     
     # register profiler hook
