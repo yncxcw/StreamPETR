@@ -11,6 +11,7 @@
 # ------------------------------------------------------------------------
 import torch
 import torch.nn as nn
+from torchvision.ops.focal_loss import sigmoid_focal_loss
 from mmcv.cnn import Linear, bias_init_with_prob
 
 from mmcv.runner import force_fp32
@@ -825,8 +826,10 @@ class StreamPETRHead(AnchorFreeHead):
                 cls_scores.new_tensor([cls_avg_factor]))
 
         cls_avg_factor = max(cls_avg_factor, 1)
-        loss_cls = self.loss_cls(
-            cls_scores, labels, label_weights, avg_factor=cls_avg_factor)
+        labels = torch.zeros(labels.size()[0], cls_scores.size()[1], dtype=torch.float, device=labels.device)
+        loss_cls = sigmoid_focal_loss(cls_scores, labels)
+        # loss_cls = self.loss_cls(
+        #     cls_scores, labels, label_weights, avg_factor=cls_avg_factor)
 
         # Compute the average number of gt boxes accross all gpus, for
         # normalization purposes
@@ -881,8 +884,10 @@ class StreamPETRHead(AnchorFreeHead):
         bbox_weights = torch.ones_like(bbox_preds)
         label_weights = torch.ones_like(known_labels)
         cls_avg_factor = max(cls_avg_factor, 1)
-        loss_cls = self.loss_cls(
-            cls_scores, known_labels.long(), label_weights, avg_factor=cls_avg_factor)
+        known_labels = torch.zeros(known_labels.size()[0], cls_scores.size()[1], dtype=torch.float, device=known_labels.device)
+        loss_cls = sigmoid_focal_loss(cls_scores, known_labels)
+        # loss_cls = self.loss_cls(
+        #    cls_scores, known_labels.long(), label_weights, avg_factor=cls_avg_factor)
 
         # Compute the average number of gt boxes accross all gpus, for
         # normalization purposes
