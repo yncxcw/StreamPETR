@@ -19,6 +19,7 @@ from projects.mmdet3d_plugin.datasets.samplers.group_sampler import DistributedG
 from projects.mmdet3d_plugin.datasets.samplers.distributed_sampler import DistributedSampler
 from projects.mmdet3d_plugin.datasets.samplers.group_sampler import InfiniteGroupEachSampleInBatchSampler
 from projects.mmdet3d_plugin.datasets.samplers.sampler import build_sampler
+from projects.mmdet3d_plugin.datasets.cached_dataloader import CachedDataLoader
 
 def build_dataloader(dataset,
                      samples_per_gpu,
@@ -30,6 +31,7 @@ def build_dataloader(dataset,
                      shuffler_sampler=None,
                      nonshuffler_sampler=None,
                      runner_type=dict(type='EpochBasedRunner'),
+                     cached_dataloader=False,
                      **kwargs):
     """Build PyTorch DataLoader.
     In distributed training, each GPU/process has a dataloader.
@@ -115,6 +117,8 @@ def build_dataloader(dataset,
         worker_init_fn=init_fn,
         **kwargs)
 
+    if cached_dataloader:
+        data_loader = CachedDataLoader(data_loader)
     return data_loader
 
 
