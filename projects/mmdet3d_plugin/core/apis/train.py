@@ -32,7 +32,7 @@ def custom_train_model(model,
             dataset,
             cfg,
             distributed=distributed,
-            validate=validate,
+            validate=False,
             timestamp=timestamp,
             eval_model=eval_model,
             meta=meta)
